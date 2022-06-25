@@ -2,6 +2,7 @@ import { MouseEvent, useState } from "react";
 import QuestionCard from "./components/QuestionCard";
 import { fetchQuestions, Difficulty, QuestionState } from "./API";
 import "./App.css";
+import { Body, FlexDiv, H1, Input, Label, StartButton } from "./styles";
 
 export interface AnswerObject {
   question: string;
@@ -10,12 +11,11 @@ export interface AnswerObject {
   correctAnswer: string;
 }
 
-const TOTAL_QUESTIONS = 20;
-
 const App = () => {
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState<QuestionState[]>([]);
   const [number, setNumber] = useState(0);
+  const [total, setTotal] = useState(10);
   const [userAnswers, setUserAnswers] = useState<AnswerObject[]>([]);
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(true);
@@ -23,7 +23,7 @@ const App = () => {
   const fetchAllQuestions = async () => {
     setLoading(true);
     setGameOver(false);
-    const newQuestions = await fetchQuestions(TOTAL_QUESTIONS, Difficulty.HARD);
+    const newQuestions = await fetchQuestions(total, Difficulty.HARD);
     console.log(newQuestions);
     setQuestions(newQuestions);
     setScore(0);
@@ -50,27 +50,37 @@ const App = () => {
 
   const nextQuestion = () => {
     const nextQuestion = number + 1;
-    if (nextQuestion === TOTAL_QUESTIONS) {
+    if (nextQuestion === total) {
       setGameOver(true);
     }
     setNumber(nextQuestion);
   };
 
   return (
-    <>
-      <h1>Typescript Quiz</h1>
-      <div>Hello</div>
-      {(gameOver || userAnswers.length === TOTAL_QUESTIONS) && (
-        <button className="start" onClick={fetchAllQuestions}>
-          Start
-        </button>
-      )}
-      {!gameOver && <p className="score">Score:</p>}
+    <Body>
+      <FlexDiv>
+        <H1>Typescript Quiz</H1>
+        <Label htmlFor="number">Number of questions: Max: 30 </Label>
+        <Input
+          type="number"
+          max={20}
+          placeholder="Enter number"
+          onChange={(e) => setTotal(Number(e.target.value))}
+        />
+        {(gameOver || userAnswers.length === total) && (
+          <>
+            <StartButton className="start" onClick={fetchAllQuestions}>
+              Start
+            </StartButton>
+          </>
+        )}
+      </FlexDiv>
       {loading && <p>Loading ......</p>}
+      <FlexDiv>{!gameOver && <p className="score">Score: {score}</p>}</FlexDiv>
       {!loading && !gameOver && (
         <QuestionCard
           questionNumber={number + 1}
-          totalQuestion={TOTAL_QUESTIONS}
+          totalQuestion={total}
           question={questions[number].question}
           answers={questions[number].answers}
           userAnswer={userAnswers ? userAnswers[number] : undefined}
@@ -80,7 +90,7 @@ const App = () => {
       {!gameOver && !loading && userAnswers.length === number + 1 && (
         <button onClick={nextQuestion}>Next Question</button>
       )}
-    </>
+    </Body>
   );
 };
 

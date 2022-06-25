@@ -1,5 +1,7 @@
 import React, { MouseEvent } from "react";
 import { AnswerObject } from "../App";
+import { PTag } from "../dist/styles";
+import { QuestionCardDiv, CardQuestions, Div, AnswerButtons } from "../styles";
 
 type Props = {
   question: string;
@@ -18,21 +20,25 @@ const QuestionCard = ({
   totalQuestion,
   userAnswer,
 }: Props) => (
-  <div>
-    <p>
+  <QuestionCardDiv>
+    <PTag>
       Question: {questionNumber} / {totalQuestion}
-    </p>
-    <p dangerouslySetInnerHTML={{ __html: question }}></p>
-    <div>
+    </PTag>
+    <PTag dangerouslySetInnerHTML={{ __html: question }}></PTag>
+    <CardQuestions>
       {answers.map((answer, i) => (
-        <div key={i}>
-          <button disabled={!!userAnswer} onClick={callback} value={answer}>
+        <Div key={i}>
+          <AnswerButtons
+            disabled={!!userAnswer}
+            onClick={callback}
+            value={answer}
+          >
             <span dangerouslySetInnerHTML={{ __html: answer }}></span>
-          </button>
-        </div>
+          </AnswerButtons>
+        </Div>
       ))}
-    </div>
-  </div>
+    </CardQuestions>
+  </QuestionCardDiv>
 );
 
 export default QuestionCard;
